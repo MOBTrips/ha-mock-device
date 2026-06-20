@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mock Device",
+        "description": "Create generated synthetic Home Assistant devices for testing. No hardware, account, or helper setup is required."
+      }
+    },
+    "abort": {
+      "already_configured": "Mock Device is already configured. v0.1.0 supports one instance to keep entity IDs stable."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Mock Device options",
+        "description": "Runtime controls are exposed as Home Assistant entities on the Mock QA Console device."
+      }
+    }
+  }
+}

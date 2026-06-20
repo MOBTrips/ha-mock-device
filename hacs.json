@@ -1,0 +1,6 @@
+{
+  "name": "Mock Device",
+  "render_readme": true,
+  "domains": ["sensor", "binary_sensor", "button", "number", "select", "switch"],
+  "homeassistant": "2025.1.0"
+}
