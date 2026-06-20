@@ -19,7 +19,7 @@ from .store import MockDeviceStore, MockDataGenerator
 _LOGGER = logging.getLogger(__name__)
 
 
-type MockDeviceConfigEntry = ConfigEntry
+MockDeviceConfigEntry = ConfigEntry
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MockDeviceConfigEntry) -> bool:

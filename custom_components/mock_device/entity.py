@@ -12,7 +12,11 @@ DEVICE_BY_KEY = {d.key: d for d in DEVICES}
 
 
 class MockBaseEntity(CoordinatorEntity):
-    """Shared behavior for all generated entities."""
+    """Shared behavior for all generated entities.
+
+    All generated entities have stable unique IDs. This matters because QA task
+    packs and regression tests should be able to map to predictable entity IDs.
+    """
 
     _attr_has_entity_name = True
 
@@ -37,8 +41,8 @@ class MockBaseEntity(CoordinatorEntity):
 
     @property
     def available(self) -> bool:
-        # The dedicated unavailable test entity intentionally reports unavailable
-        # by returning None from the data generator.
-        if self.spec.key == "synthetic_fault_unavailable_state":
+        # Dedicated unavailable entities intentionally return None from the
+        # generator so consuming integrations can test unavailable handling.
+        if self.spec.key in {"mock_fault_device_unavailable_state", "synthetic_fault_unavailable_state"}:
             return self.coordinator.data.get(self.spec.key) is not None
         return super().available

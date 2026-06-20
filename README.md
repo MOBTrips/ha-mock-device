@@ -1,84 +1,96 @@
-# Mock Device for Home Assistant
+# Mock Device
 
-Mock Device is a test-only Home Assistant custom integration that creates realistic synthetic devices with generated data. It is intended for validating Home Assistant integrations, dashboards, automations, maintenance systems, and edge-case handling without creating manual helpers or needing real hardware.
+Mock Device is a Home Assistant custom integration that creates generated synthetic devices and sensor data for QA, regression testing, and integration development.
 
-The initial design was created to support Home Maintenance Manager QA, but the integration is intentionally generic and can be reused by any Home Assistant project.
+It is intentionally **integration agnostic**. It can be used to test Home Maintenance Manager, dashboards, automations, template sensors, history/statistics behavior, import wizards, and other integrations that need predictable Home Assistant entities.
 
-## What it creates
+## v0.1.1 highlights
 
-Mock Device creates multiple synthetic devices, including:
-
-- Synthetic Generator
-- Synthetic UPS
-- Synthetic Pool Pump
-- Synthetic HVAC Filter
-- Synthetic Water Filter
-- Synthetic Energy Meter
-- Synthetic Environment Station
-- Synthetic Calendar Device
-- Synthetic NFC Device
-- Synthetic Fault Device
-- Mock QA Console
-
-These devices expose read-only sensors and binary sensors for runtime, meters, service-due states, maintenance history, environmental values, date/time values, and bad-data behavior. The QA Console exposes controls for reset, acceleration, profile selection, and fault injection.
-
-## Key features
-
-- No external account or hardware
-- No manually created helpers
-- Stable entity IDs for repeatable testing
-- Accelerated simulated time
-- Persistent synthetic state across Home Assistant restarts
-- Service-due and overdue simulation
-- Maintenance history simulation
+- 20 generated devices
+- 260 generated entities
+- Generic QA devices such as `Mock Runtime Device`, `Mock Meter Device`, and `Mock Service Device`
+- Equipment-style demo devices such as `Synthetic Generator`, `Synthetic UPS`, and `Synthetic Pool Pump`
+- Accelerated simulated time with a configurable speed multiplier
+- Persistent generated state across Home Assistant restarts
+- Service-due, remaining-life, due-date, and maintenance-history entities
 - Automatic and manual fault injection
-- Diagnostics export support
-- Clean unload and clean uninstall behavior
-- HACS custom repository ready
+- Reset/trigger controls through the `Mock QA Console`
+- Diagnostics snapshot service: `mock_device.export_state_snapshot`
+- Clean unload/uninstall behavior with no helper entities, YAML, automations, or writes to other integrations
 
-## Installation
+## Install with HACS custom repository
 
-### HACS custom repository
+1. HACS → Integrations → three-dot menu → Custom repositories.
+2. Repository: `MOBTrips/ha-mock-device`.
+3. Category: **Integration**.
+4. Add and install **Mock Device**.
+5. Restart Home Assistant.
+6. Settings → Devices & services → Add integration → **Mock Device**.
 
-1. Add this repository to HACS as a custom repository.
-2. Choose category **Integration**.
-3. Install **Mock Device**.
-4. Restart Home Assistant.
-5. Go to **Settings → Devices & services → Add integration**.
-6. Search for **Mock Device**.
-7. Add it. No credentials are required.
+## Devices created
 
-### Manual installation
+| Device | Entity count | Purpose |
+|---|---:|---|
+| Mock QA Console | 14 | Generated QA coverage |
+| Mock Runtime Device | 18 | Generated QA coverage |
+| Mock Meter Device | 16 | Generated QA coverage |
+| Mock Service Device | 19 | Generated QA coverage |
+| Mock Environmental Device | 14 | Generated QA coverage |
+| Mock Flow Device | 13 | Generated QA coverage |
+| Mock Distance Device | 11 | Generated QA coverage |
+| Mock Consumable Device | 12 | Generated QA coverage |
+| Mock Calendar Device | 12 | Generated QA coverage |
+| Mock Event Device | 11 | Generated QA coverage |
+| Mock Binary Device | 12 | Generated QA coverage |
+| Mock Enum Status Device | 10 | Generated QA coverage |
+| Mock Fault Device | 14 | Generated QA coverage |
+| Synthetic Generator | 15 | Generated QA coverage |
+| Synthetic UPS | 13 | Generated QA coverage |
+| Synthetic Pool Pump | 15 | Generated QA coverage |
+| Synthetic HVAC Filter | 11 | Generated QA coverage |
+| Synthetic Water Filter | 10 | Generated QA coverage |
+| Synthetic Energy Meter | 10 | Generated QA coverage |
+| Synthetic Environment Station | 10 | Generated QA coverage |
 
-Copy this folder into your Home Assistant config directory:
+## Platform count
 
-```text
-custom_components/mock_device
-```
+| Platform | Count |
+|---|---:|
+| `select` | 1 |
+| `number` | 1 |
+| `switch` | 1 |
+| `button` | 9 |
+| `sensor` | 224 |
+| `binary_sensor` | 24 |
 
-Then restart Home Assistant and add the integration from the UI.
+## QA Console controls
 
-## Entity naming
+The integration keeps normal test entities read-only. The `Mock QA Console` exposes a small set of controls:
 
-Entity IDs are designed to be stable for QA task packs and automated tests. Example:
+- `button.mock_qa_console_reset_all`
+- `button.mock_qa_console_reset_runtime`
+- `button.mock_qa_console_reset_meters`
+- `button.mock_qa_console_reset_service_due`
+- `button.mock_qa_console_trigger_service_due`
+- `button.mock_qa_console_trigger_service_overdue`
+- `button.mock_qa_console_force_bad_data`
+- `button.mock_qa_console_force_cycle`
+- `button.mock_qa_console_seed_known_state`
+- `select.mock_qa_console_profile`
+- `number.mock_qa_console_speed_multiplier`
+- `switch.mock_qa_console_automatic_faults`
 
-```text
-sensor.synthetic_generator_runtime_hours
-binary_sensor.synthetic_generator_service_due
-button.mock_qa_console_reset_all
-number.mock_qa_console_speed_multiplier
-select.mock_qa_console_profile
-```
+## Simulated time
 
-For v0.1.0, the integration is designed for a single config entry. Duplicate setup is intentionally blocked to avoid duplicate entity suffixes.
+`number.mock_qa_console_speed_multiplier` controls accelerated time. The default is `60x`, meaning one real minute behaves like one simulated hour. The `fast_forward` profile forces at least `1440x`, useful when testing day/month/year logic.
+
+## Uninstall behavior
+
+Mock Device does not create Home Assistant helpers, automations, dashboards, or HMM data. Removing the integration entry unloads platforms and removes the integration service. Entity/device registry cleanup follows normal Home Assistant config-entry removal behavior.
 
 ## Documentation
 
 - [Entity catalog](docs/entity-catalog.md)
 - [Testing guide](docs/testing-guide.md)
-- [Uninstall guide](docs/uninstall.md)
 - [Developer notes](docs/developer-notes.md)
-
-## Important warning
-
-This integration generates fake data. Do not use it for real monitoring, real alerts, safety decisions, equipment control, or production maintenance decisions.
+- [Uninstall guide](docs/uninstall.md)

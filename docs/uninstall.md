@@ -1,33 +1,8 @@
 # Uninstall Guide
 
-Mock Device is designed for clean removal.
+1. Settings → Devices & services → Mock Device.
+2. Delete the Mock Device config entry.
+3. Restart Home Assistant if HACS asks you to.
+4. Remove the custom repository from HACS if desired.
 
-## Normal uninstall
-
-1. Go to **Settings → Devices & services**.
-2. Open **Mock Device**.
-3. Delete the integration entry.
-4. Restart Home Assistant if HACS or HA asks you to.
-5. Remove the custom repository from HACS if desired.
-
-## What should be removed
-
-- All Mock Device entities
-- All synthetic devices
-- Update coordinator/timer listeners
-- The `mock_device.export_state_snapshot` service
-
-## What is intentionally not created
-
-Mock Device does not create:
-
-- helpers
-- automations
-- scripts
-- Home Maintenance Manager data
-- YAML packages
-- external files outside normal Home Assistant integration storage
-
-## Persistent storage note
-
-The integration uses Home Assistant's normal storage helper to persist generated state. Removing the integration entry removes the active devices/entities. Home Assistant may retain historical entity registry/statistics records according to normal HA behavior.
+Mock Device does not create helpers, automations, dashboards, or HMM storage records. Any remaining disabled/stale entity registry entries can be removed through Home Assistant's normal entity cleanup tools.

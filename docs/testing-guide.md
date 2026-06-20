@@ -1,59 +1,29 @@
 # Testing Guide
 
-## Basic smoke test
+## Recommended HMM QA flow
 
-1. Install Mock Device.
-2. Add the integration from **Settings → Devices & services**.
-3. Confirm these devices exist:
-   - Synthetic Generator
-   - Synthetic UPS
-   - Synthetic Pool Pump
-   - Synthetic HVAC Filter
-   - Synthetic Water Filter
-   - Synthetic Energy Meter
-   - Synthetic Environment Station
-   - Synthetic Fault Device
-   - Mock QA Console
-4. Confirm `sensor.mock_qa_console_tick` increments.
-5. Confirm runtime and meter values increase over time.
+1. Install Mock Device through HACS as a custom integration.
+2. Add the Mock Device integration in Home Assistant.
+3. Confirm the generic devices appear first: Runtime, Meter, Service, Environmental, Flow, Distance, Consumable, Calendar, Event, Binary, Enum, Fault, and QA Console.
+4. Use `button.mock_qa_console_seed_known_state` to start from a predictable baseline.
+5. Import or map test tasks to the generic entities.
+6. Use `number.mock_qa_console_speed_multiplier` and `select.mock_qa_console_profile` to accelerate schedule behavior.
+7. Use trigger/reset buttons to test due, overdue, bad data, cycle completion, runtime reset, meter reset, and service reset.
+8. Call `mock_device.export_state_snapshot` when capturing a bug report.
 
-## Accelerated time test
+## Coverage targets
 
-Set `number.mock_qa_console_speed_multiplier` to `60` to simulate roughly one minute per real second. Set it to `1440` for very fast date/service testing.
+Mock Device is intended to cover combinations of:
 
-## Service-due test
+- timebases: seconds, minutes, hours, days, weeks, months, years
+- state classes: measurement, total_increasing, no state class
+- sensor patterns: cumulative, resetting/session, threshold, date/timestamp, enum/text, binary, stale, unavailable, unknown, negative, zero, spike
+- units: s, min, h, d, %, W, kW, kWh, gal, L, ft³, gal/min, L/min, ft³/min, psi, Pa, °F, °C, ft, m, mi, km, cycles, count
 
-1. Press `button.mock_qa_console_trigger_service_due`.
-2. Confirm service-due binary sensors turn on.
-3. Press `button.mock_qa_console_trigger_service_overdue`.
-4. Confirm overdue/status entities change.
-5. Press `button.mock_qa_console_reset_service_due`.
-6. Confirm service-due states clear.
+## Profiles
 
-## Bad-data test
-
-1. Press `button.mock_qa_console_force_bad_data`.
-2. Confirm Synthetic Fault Device reports edge values.
-3. Confirm consuming integrations handle unknown/unavailable/negative/spiky values safely.
-
-## Persistence test
-
-1. Let several counters increase.
-2. Restart Home Assistant.
-3. Confirm values resume from the prior persisted state instead of resetting.
-
-## Diagnostics snapshot
-
-Call the service:
-
-```yaml
-service: mock_device.export_state_snapshot
-```
-
-Then listen for the event:
-
-```text
-mock_device_state_snapshot
-```
-
-Home Assistant diagnostics for the config entry also includes the current generator state and values.
+- `normal`: predictable running/idling and gradual changes
+- `intermittent`: shorter on/off windows
+- `bad_data`: intentionally emits bad/fault states
+- `fast_forward`: forces very fast simulated time
+- `long_cycle`: longer runtime cycles
